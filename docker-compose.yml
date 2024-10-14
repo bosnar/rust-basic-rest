@@ -1,0 +1,14 @@
+# สร้าง docker สำหรับ database mongodb
+version: '3.8'
+
+name: 'rust-rest-api'
+
+services:
+  db:
+      container_name: 'mongo'
+      image: mongo:latest
+      ports:
+          - '27017:27017'
+      environment:
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: 123456

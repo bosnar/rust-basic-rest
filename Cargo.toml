@@ -1,0 +1,15 @@
+[package]
+name = "rust-rest-api"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "0.7"
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
+mongodb = "3.0"
+bson = "2.13"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+tower-http = { version = "0.6", features = ["full"] }

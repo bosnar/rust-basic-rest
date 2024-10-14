@@ -1,0 +1,29 @@
+// Array
+let numbers: [i32; 5] = [1, 2, 3, 4, 5];
+println!("The first element of the array is: {:?}", numbers[0]);
+
+let fruits: [&str; 3] = ["apple", "banana", "orange"];
+println!("The first element of the array is: {:?}", fruits[0]);
+println!("The second element of the array is: {:?}", fruits[1]);
+println!("The third element of the array is: {:?}", fruits[2]);
+
+// Tuple เก็บอะไรก็ได้ แต่ต้องระบุชนิดของข้อมูลที่จะเก็บ
+let humans: (String, i8, bool) = ("boss".to_string(), 10, false);
+println!("The first element of the tuple is: {:?}", humans.0);
+
+let my_mix = ("boss", 10, false, [10, 20, 30]);
+println!("The first element of the tuple is: {:?}", my_mix);
+
+// ** &str คือ String slice, reference ของ String ไม่ใช่ Owned String
+// Stack can't have mutable types
+// Heap can have mutable types
+
+// Slices: [1,2,3,4,5]
+let numbers_slices: &[i32; 5] = &[1, 4, 3, 4, 5];
+println!("element slice {:?}", numbers_slices);
+
+// B- &str (String slice)
+let string: String = String::from("Hello, World!");
+let slices: &str = &string[0..5]; // &string
+println!("element string {:?}", string);
+println!("element slice {:?}", slices);
