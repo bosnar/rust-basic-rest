@@ -28,13 +28,23 @@ pub async fn insert_one_item(req: InsertItemRequest) -> Result<ObjectId, String>
         }
     };
 
-    match inserted_id_bson {
-        bson::Bson::ObjectId(id) => {
-            info!("Inserted id: {}", id);
-            return Ok(id);
-        }
-        _ => {
-            return Err(format!("Error: Inserted id is not ObjectId"));
-        }
+    // จัดการ Result ได้ทั้ง 2 แบบ
+    // แบบที่ 1 ใช้ let if
+    if let bson::Bson::ObjectId(id) = inserted_id_bson {
+        info!("Inserted id: {}", id);
+        return Ok(id);
+    } else {
+        return Err(format!("Error: Inserted id is not ObjectId"));
     }
+
+    // แบบที่ 2 ใช้ match
+    // match inserted_id_bson {
+    //     bson::Bson::ObjectId(id) => {
+    //         info!("Inserted id: {}", id);
+    //         return Ok(id);
+    //     }
+    //     _ => {
+    //         return Err(format!("Error: Inserted id is not ObjectId"));
+    //     }
+    // }
 }
