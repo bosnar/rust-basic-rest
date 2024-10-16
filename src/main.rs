@@ -28,7 +28,8 @@ async fn main() {
         ]))
         // add the items routes
         .route("/", get(|| async { "Hello World" }))
-        .route("/item", post(items::handler::insert_one_item));
+        .route("/item", post(items::handler::insert_one_item))
+        .route("/item/:id", get(items::handler::find_one_item));
 
     // run our app with hyper, listening globally on port 3000
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();

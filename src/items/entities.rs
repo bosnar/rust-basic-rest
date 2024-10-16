@@ -32,15 +32,15 @@ pub struct InsertItemRequest {
 }
 
 // ส่วนของการ Implement
-// impl Item {
-//     fn new() -> Self {
-//         Item {
-//             _id: String::from(""),
-//             name: String::from(""),
-//             description: String::from(""),
-//             damage: 0,
-//             level_required: 0,
-//             price: 0,
-//         }
-//     }
-// }
+impl Item {
+    pub fn new() -> Self {
+        Item {
+            _id: String::from(""),
+            name: String::from(""),
+            description: String::from(""),
+            damage: 0,
+            level_required: 0,
+            price: 0,
+        }
+    }
+}
