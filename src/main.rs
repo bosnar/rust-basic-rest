@@ -3,7 +3,7 @@ pub mod items; // This line is added to the main.rs file
 
 use axum::{
     http::Method,
-    routing::{get, post},
+    routing::{delete, get, patch, post},
     Router,
 };
 use tower_http::cors::{Any, CorsLayer};
@@ -30,7 +30,9 @@ async fn main() {
         .route("/", get(|| async { "Hello World" }))
         .route("/item", post(items::handler::insert_one_item))
         .route("/item", get(items::handler::find_items))
-        .route("/item/:id", get(items::handler::find_one_item));
+        .route("/item/:id", get(items::handler::find_one_item))
+        .route("/item/:id", patch(items::handler::update_item))
+        .route("/item/:id", delete(items::handler::delete_item));
 
     // run our app with hyper, listening globally on port 3000
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();

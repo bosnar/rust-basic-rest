@@ -2,7 +2,11 @@ use super::entities::{InsertItemRequest, Item, ItemBson}; // ใช้ super เ
 use crate::config::database::dbconnect;
 // ใช้ crate เพื่อบอก rust ว่าให้มองหา file นี้ใน root directory
 use bson::{doc, from_document, oid::ObjectId, Document};
-use mongodb::{error::Error, results::InsertOneResult, Cursor};
+use mongodb::{
+    error::Error,
+    results::{DeleteResult, InsertOneResult, UpdateResult},
+    Cursor,
+};
 use tracing::log::info;
 
 pub async fn insert_one_item(req: InsertItemRequest) -> Result<ObjectId, String> {
@@ -142,4 +146,53 @@ pub async fn find_one_item(item_id: ObjectId) -> Result<Item, String> {
         level_required: item.level_required,
         price: item.price,
     })
+}
+
+pub async fn update_item(req: ItemBson) -> Result<UpdateResult, String> {
+    // Connected to database
+    let db = dbconnect().await.expect("error connection to database");
+    let col = db.collection::<Document>("items");
+
+    let mut update_fields = doc! {};
+
+    if req.name != "" {
+        update_fields.insert("name", req.name);
+    }
+    if req.description != "" {
+        update_fields.insert("description", req.description);
+    }
+    if req.damage != 0 {
+        update_fields.insert("damage", req.damage);
+    }
+    if req.level_required != 0 {
+        update_fields.insert("level_required", req.level_required);
+    }
+    if req.price != 0 {
+        update_fields.insert("price", req.price);
+    }
+
+    match col
+        .update_many(doc! {"_id": req._id}, doc! {"$set": update_fields})
+        .await
+    {
+        Ok(r) => Ok(r),
+        Err(e) => {
+            info!("Error: {:?}", e);
+            return Err(format!("Error: Update item failed"));
+        }
+    }
+}
+
+pub async fn delete_item(item_id: ObjectId) -> Result<DeleteResult, String> {
+    // Connected to database
+    let db = dbconnect().await.expect("error connection to database");
+    let col = db.collection::<Document>("items");
+
+    match col.delete_one(doc! {"_id": item_id}).await {
+        Ok(r) => Ok(r),
+        Err(e) => {
+            info!("Error: {:?}", e);
+            return Err(format!("Error: Delete item failed"));
+        }
+    }
 }
