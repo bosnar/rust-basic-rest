@@ -29,6 +29,7 @@ async fn main() {
         // add the items routes
         .route("/", get(|| async { "Hello World" }))
         .route("/item", post(items::handler::insert_one_item))
+        .route("/item", get(items::handler::find_items))
         .route("/item/:id", get(items::handler::find_one_item));
 
     // run our app with hyper, listening globally on port 3000

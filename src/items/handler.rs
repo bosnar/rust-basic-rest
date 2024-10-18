@@ -26,6 +26,17 @@ pub async fn insert_one_item(Json(req): Json<InsertItemRequest>) -> impl IntoRes
     }
 }
 
+pub async fn find_items() -> impl IntoResponse {
+    (
+        StatusCode::OK,
+        Json(json!({
+            "status": "success",
+            "data": usecase::find_item().await,
+        })),
+    )
+        .into_response()
+}
+
 // note ... Path(id): Path<ObjectId>
 // generic struct
 pub async fn find_one_item(Path(id): Path<ObjectId>) -> impl IntoResponse {

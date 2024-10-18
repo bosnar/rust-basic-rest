@@ -2,7 +2,7 @@ use super::entities::{InsertItemRequest, Item, ItemBson}; // ใช้ super เ
 use crate::config::database::dbconnect;
 // ใช้ crate เพื่อบอก rust ว่าให้มองหา file นี้ใน root directory
 use bson::{doc, from_document, oid::ObjectId, Document};
-use mongodb::{error::Error, results::InsertOneResult};
+use mongodb::{error::Error, results::InsertOneResult, Cursor};
 use tracing::log::info;
 
 pub async fn insert_one_item(req: InsertItemRequest) -> Result<ObjectId, String> {
@@ -47,6 +47,61 @@ pub async fn insert_one_item(req: InsertItemRequest) -> Result<ObjectId, String>
     //         return Err(format!("Error: Inserted id is not ObjectId"));
     //     }
     // }
+}
+
+pub async fn find_item() -> Vec<Item> {
+    // Connected to database
+    let db = dbconnect().await.expect("error connection to database");
+    let col = db.collection::<Document>("items");
+
+    let cursor_result = col.find(doc! {}).await;
+    let mut _cursor: Cursor<Document>;
+
+    match cursor_result {
+        Ok(r) => _cursor = r,
+        Err(e) => {
+            info!("Error: {}", e);
+            return vec![];
+        }
+    };
+
+    // เอาค่าจาก cursor มาใส่ใน items
+    let mut items = Vec::new();
+    while let Ok(next) = _cursor.advance().await {
+        if !next {
+            break;
+        }
+
+        let item_doc = match _cursor.deserialize_current().ok() {
+            Some(r) => r,
+            None => {
+                info!("Error: deserializing item");
+                return Vec::new();
+            }
+        };
+
+        // แปลงเป็น Bson
+        let item: ItemBson = match from_document(item_doc)
+            .map_err(|e| format!("Error: deserializing item: {}", e))
+        {
+            Ok(r) => r,
+            Err(e) => {
+                info!("Error: {}", e);
+                return Vec::new();
+            }
+        };
+
+        items.push(Item {
+            _id: item._id.to_hex(),
+            name: item.name,
+            description: item.description,
+            damage: item.damage,
+            level_required: item.level_required,
+            price: item.price,
+        });
+    }
+
+    items
 }
 
 pub async fn find_one_item(item_id: ObjectId) -> Result<Item, String> {
